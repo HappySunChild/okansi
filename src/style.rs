@@ -5,6 +5,8 @@ mod bit_masks {
 	pub const STRIKETHROUGH: u8 = 0b1000;
 }
 
+use std::fmt::{Display, Write};
+
 use super::Color;
 
 #[derive(Default)]
@@ -46,45 +48,6 @@ impl AnsiStyle {
 	pub fn is_plain(&self) -> bool {
 		return !((self.flags != 0) | self.foreground.is_some() | self.background.is_some());
 	}
-	fn gen_prefix(&self) -> Option<String> {
-		if self.is_plain() {
-			return None;
-		}
-
-		let mut prefix = String::from("\x1b[");
-		let mut wrote = false;
-		let mut append = |arg: &str| {
-			if wrote {
-				prefix.push(';');
-			}
-			prefix.push_str(arg);
-			wrote = true;
-		};
-
-		if self.g_bold() {
-			append("1");
-		}
-		if self.g_italic() {
-			append("3");
-		}
-		if self.g_underline() {
-			append("4")
-		}
-		if self.g_strikethrough() {
-			append("9")
-		}
-
-		if let Some(foreground) = &self.foreground {
-			append(foreground.gen_sequence(false).as_str());
-		}
-		if let Some(background) = &self.background {
-			append(background.gen_sequence(true).as_str());
-		}
-
-		prefix.push('m');
-
-		Some(prefix)
-	}
 
 	// mutating chaining
 	pub fn m_bold(&mut self, enabled: bool) -> &mut Self {
@@ -100,19 +63,15 @@ impl AnsiStyle {
 		self.set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
 
-	pub fn m_apply(&self, text: &mut String) -> Result<(), ()> {
-		let prefix = self.gen_prefix().ok_or(())?;
-
-		text.insert_str(0, &prefix[..]);
-
-		Ok(())
+	pub fn m_apply(&self, text: &mut String) -> () {
+		text.insert_str(0, &self.to_string()[..]);
 	}
-	pub fn m_apply_with_reset(&self, text: &mut String) -> Result<(), ()> {
-		self.m_apply(text)?;
-
+	pub fn m_apply_with_reset(&self, text: &mut String) -> () {
+		if self.is_plain() {
+			return;
+		}
+		self.m_apply(text);
 		text.push_str("\x1b[0m");
-
-		Ok(())
 	}
 
 	// constructing chaining
@@ -143,13 +102,56 @@ impl AnsiStyle {
 
 	pub fn apply(&self, text: &String) -> String {
 		let mut new_text = text.clone();
-		self.m_apply(&mut new_text).ok();
+		self.m_apply(&mut new_text);
 		new_text
 	}
 	pub fn apply_with_reset(&self, text: &String) -> String {
 		let mut new_text = text.clone();
-		self.m_apply_with_reset(&mut new_text).ok();
+		self.m_apply_with_reset(&mut new_text);
 		new_text
+	}
+}
+impl Display for AnsiStyle {
+	fn fmt(&self, handle: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		if self.is_plain() {
+			return Ok(()); // i wish there was a way to propogate that the formatting *technically* failed because the style is plain, but we can't :/ (or atleast i don't know how to yet)
+		}
+
+		handle.write_str("\x1b[")?;
+
+		let mut wrote = false;
+		let mut append = |arg: &str| -> std::fmt::Result {
+			if wrote {
+				handle.write_char(';')?;
+			}
+			handle.write_str(arg)?;
+			wrote = true;
+			Ok(())
+		};
+
+		if self.g_bold() {
+			append("1")?
+		}
+		if self.g_italic() {
+			append("3")?
+		}
+		if self.g_underline() {
+			append("4")?
+		}
+		if self.g_strikethrough() {
+			append("9")?
+		}
+
+		if let Some(foreground) = &self.foreground {
+			append(foreground.gen_sequence(false).as_str())?
+		}
+		if let Some(background) = &self.background {
+			append(background.gen_sequence(true).as_str())?
+		}
+
+		handle.write_char('m')?;
+
+		Ok(())
 	}
 }
 
@@ -199,9 +201,7 @@ mod tests {
 		let plain_style = AnsiStyle::new();
 		let mut text = String::from("Hello world!");
 
-		plain_style
-			.m_apply(&mut text)
-			.expect_err("Sucessfully applied a plain style?");
+		plain_style.m_apply(&mut text);
 
 		assert_eq!(
 			&text[..],
@@ -209,9 +209,7 @@ mod tests {
 			"String was modified by a plain style, got {text}"
 		);
 
-		plain_style
-			.m_apply_with_reset(&mut text)
-			.expect_err("Successfully applied a plain style?");
+		plain_style.m_apply_with_reset(&mut text);
 
 		assert_eq!(
 			&text[..],
@@ -232,9 +230,7 @@ mod tests {
 			"Hello world!" // "String doesn't equal Hello world?"
 		);
 
-		style
-			.m_apply(&mut text)
-			.expect("Failed to apply non-plain style?");
+		style.m_apply(&mut text);
 
 		assert_eq!(
 			&text[..],
