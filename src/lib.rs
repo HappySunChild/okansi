@@ -1,3 +1,4 @@
+pub mod codes;
 mod color;
 mod style;
 

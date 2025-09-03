@@ -79,7 +79,7 @@ impl AnsiStyle {
 			return;
 		}
 		self.m_apply(text);
-		text.push_str("\x1b[0m");
+		text.push_str(codes::RESET);
 	}
 
 	// constructing chaining
