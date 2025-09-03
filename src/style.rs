@@ -7,7 +7,7 @@ mod bit_masks {
 
 use std::fmt::{Display, Write};
 
-use super::Color;
+use super::{Color, codes};
 
 #[derive(Default)]
 pub struct AnsiStyle {
@@ -62,6 +62,14 @@ impl AnsiStyle {
 	pub fn m_strikethrough(&mut self, enabled: bool) -> &mut Self {
 		self.set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
+	pub fn m_fg(&mut self, foreground: Option<Color>) -> &mut Self {
+		self.foreground = foreground;
+		self
+	}
+	pub fn m_bg(&mut self, background: Option<Color>) -> &mut Self {
+		self.background = background;
+		self
+	}
 
 	pub fn m_apply(&self, text: &mut String) -> () {
 		text.insert_str(0, &self.to_string()[..]);
@@ -96,6 +104,18 @@ impl AnsiStyle {
 	pub fn strikethrough(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::STRIKETHROUGH,
+			..Default::default()
+		}
+	}
+	pub fn fg(&self, foreground: Color) -> Self {
+		Self {
+			foreground: Some(foreground),
+			..Default::default()
+		}
+	}
+	pub fn bg(&self, background: Color) -> Self {
+		Self {
+			background: Some(background),
 			..Default::default()
 		}
 	}
