@@ -16,22 +16,26 @@ pub struct AnsiStyle {
 	pub flags: u8,
 }
 impl AnsiStyle {
+	/// Returns a new plain `AnsiStyle`
 	pub fn new() -> Self {
 		Self {
 			..Default::default()
 		}
 	}
 
-	// getters
+	/// Returns whether the bold flag is set
 	pub fn g_bold(&self) -> bool {
 		self.flags & bit_masks::BOLD == bit_masks::BOLD
 	}
+	/// Returns whether the italic flag is set
 	pub fn g_italic(&self) -> bool {
 		self.flags & bit_masks::ITALIC == bit_masks::ITALIC
 	}
+	/// Returns whether the underline flag is set
 	pub fn g_underline(&self) -> bool {
 		self.flags & bit_masks::UNDERLINE == bit_masks::UNDERLINE
 	}
+	/// Returns whether the strikethough flag is set
 	pub fn g_strikethrough(&self) -> bool {
 		self.flags & bit_masks::STRIKETHROUGH == bit_masks::STRIKETHROUGH
 	}
@@ -49,57 +53,70 @@ impl AnsiStyle {
 		self
 	}
 
+	/// Returns whether the `AnsiStyle` will be applied
 	pub fn is_plain(&self) -> bool {
 		!((self.flags != 0) | self.foreground.is_some() | self.background.is_some())
 	}
 
-	// mutating chaining
+	/// Modifies the `AnsiStyle`'s bold flag, must be mutable
 	pub fn m_bold(&mut self, enabled: bool) -> &mut Self {
 		self.set_flags(bit_masks::BOLD, enabled)
 	}
+	/// Modifies the `AnsiStyle`'s italic flag, must be mutable
 	pub fn m_italic(&mut self, enabled: bool) -> &mut Self {
 		self.set_flags(bit_masks::ITALIC, enabled)
 	}
+	/// Modifies the `AnsiStyle`'s underline flag, must be mutable
 	pub fn m_underline(&mut self, enabled: bool) -> &mut Self {
 		self.set_flags(bit_masks::UNDERLINE, enabled)
 	}
+	/// Modifies the `AnsiStyle`'s strikethrough flag, must be mutable
 	pub fn m_strikethrough(&mut self, enabled: bool) -> &mut Self {
 		self.set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
+	/// Modifies the `AnsiStyle`'s foreground color, must be mutable
 	pub fn m_fg(&mut self, foreground: Option<Color>) -> &mut Self {
 		self.foreground = foreground;
 		self
 	}
+	/// Modifies the `AnsiStyle`'s background color, must be mutable
 	pub fn m_bg(&mut self, background: Option<Color>) -> &mut Self {
 		self.background = background;
 		self
 	}
 
-	// borrow mutating chaining
+	/// Borrows and modifies the `AnsiStyle`'s bold flag
 	pub fn bm_bold(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::BOLD, enabled)
 	}
+	/// Borrows and modifies the `AnsiStyle`'s italic flag
 	pub fn bm_italic(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::ITALIC, enabled)
 	}
+	/// Borrows and modifies the `AnsiStyle`'s underline flag
 	pub fn bm_underline(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::UNDERLINE, enabled)
 	}
+	/// Borrows and modifies the `AnsiStyle`'s strikethrough flag
 	pub fn bm_strikethrough(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
+	/// Borrows and modifies the `AnsiStyle`'s foreground color
 	pub fn bm_fg(mut self, foreground: Option<Color>) -> Self {
 		self.foreground = foreground;
 		self
 	}
+	/// Borrows and modifies the `AnsiStyle`'s background color
 	pub fn bm_bg(mut self, background: Option<Color>) -> Self {
 		self.background = background;
 		self
 	}
 
+	/// Modifies the passed `String` by applying the `AnsiStyle`
 	pub fn m_apply(&self, text: &mut String) {
 		text.insert_str(0, &self.to_string()[..]);
 	}
+	/// Modifies the passed `String` by applying the `AnsiStyle` with an `\x1b[0m` suffix
 	pub fn m_apply_with_reset(&self, text: &mut String) {
 		if self.is_plain() {
 			return;
@@ -108,37 +125,42 @@ impl AnsiStyle {
 		text.push_str(codes::RESET);
 	}
 
-	// constructing chaining
+	/// Returns a new `AnsiStyle` with the bold flag set to `true`
 	pub fn bold(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::BOLD,
 			..Default::default()
 		}
 	}
+	/// Returns a new `AnsiStyle` with the italic flag set to `true`
 	pub fn italic(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::ITALIC,
 			..Default::default()
 		}
 	}
+	/// Returns a new `AnsiStyle` with the underline flag set to `true`
 	pub fn underline(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::UNDERLINE,
 			..Default::default()
 		}
 	}
+	/// Returns a new `AnsiStyle` with the strikethough flag set to `true`
 	pub fn strikethrough(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::STRIKETHROUGH,
 			..Default::default()
 		}
 	}
+	/// Returns a new `AnsiStyle` with the foreground set the the specified `Color`
 	pub fn fg(&self, foreground: Color) -> Self {
 		Self {
 			foreground: Some(foreground),
 			..Default::default()
 		}
 	}
+	/// Returns a new `AnsiStyle` with the background set the the specified `Color`
 	pub fn bg(&self, background: Color) -> Self {
 		Self {
 			background: Some(background),
@@ -146,11 +168,13 @@ impl AnsiStyle {
 		}
 	}
 
+	/// Returns a cloned `String` of the passed in text with the `AnsiStyle` applied
 	pub fn apply(&self, text: &str) -> String {
 		let mut new_text = text.to_owned();
 		self.m_apply(&mut new_text);
 		new_text
 	}
+	/// Returns a cloned `String` of the passed in text with the `AnsiStyle` applied and an `\x1b[0m` suffix
 	pub fn apply_with_reset(&self, text: &str) -> String {
 		let mut new_text = text.to_owned();
 		self.m_apply_with_reset(&mut new_text);
