@@ -9,6 +9,7 @@ use std::fmt::{Display, Write};
 
 use super::{Color, codes};
 
+/// Contains data and methods for easily configuring ANSI format sequences
 #[derive(Default)]
 pub struct AnsiStyle {
 	pub foreground: Option<Color>,
