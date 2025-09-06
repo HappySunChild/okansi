@@ -46,7 +46,7 @@ impl AnsiStyle {
 	}
 
 	pub fn is_plain(&self) -> bool {
-		return !((self.flags != 0) | self.foreground.is_some() | self.background.is_some());
+		!((self.flags != 0) | self.foreground.is_some() | self.background.is_some())
 	}
 
 	// mutating chaining
@@ -71,10 +71,10 @@ impl AnsiStyle {
 		self
 	}
 
-	pub fn m_apply(&self, text: &mut String) -> () {
+	pub fn m_apply(&self, text: &mut String) {
 		text.insert_str(0, &self.to_string()[..]);
 	}
-	pub fn m_apply_with_reset(&self, text: &mut String) -> () {
+	pub fn m_apply_with_reset(&self, text: &mut String) {
 		if self.is_plain() {
 			return;
 		}
@@ -120,13 +120,13 @@ impl AnsiStyle {
 		}
 	}
 
-	pub fn apply(&self, text: &String) -> String {
-		let mut new_text = text.clone();
+	pub fn apply(&self, text: &str) -> String {
+		let mut new_text = text.to_owned();
 		self.m_apply(&mut new_text);
 		new_text
 	}
-	pub fn apply_with_reset(&self, text: &String) -> String {
-		let mut new_text = text.clone();
+	pub fn apply_with_reset(&self, text: &str) -> String {
+		let mut new_text = text.to_owned();
 		self.m_apply_with_reset(&mut new_text);
 		new_text
 	}
