@@ -4,5 +4,6 @@ version = "0.1.0"
 edition = "2024"
 license = "MIT"
 description = "An ok library for creating ANSI terminal styles"
+repository = "https://github.com/HappySunChild/okansi"
 
 [dependencies]
