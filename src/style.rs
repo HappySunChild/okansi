@@ -44,6 +44,10 @@ impl AnsiStyle {
 		}
 		self
 	}
+	fn b_set_flags(mut self, mask: u8, enabled: bool) -> Self {
+		self.set_flags(mask, enabled);
+		self
+	}
 
 	pub fn is_plain(&self) -> bool {
 		!((self.flags != 0) | self.foreground.is_some() | self.background.is_some())
@@ -67,6 +71,28 @@ impl AnsiStyle {
 		self
 	}
 	pub fn m_bg(&mut self, background: Option<Color>) -> &mut Self {
+		self.background = background;
+		self
+	}
+
+	// borrow mutating chaining
+	pub fn bm_bold(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::BOLD, enabled)
+	}
+	pub fn bm_italic(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::ITALIC, enabled)
+	}
+	pub fn bm_underline(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::UNDERLINE, enabled)
+	}
+	pub fn bm_strikethrough(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::STRIKETHROUGH, enabled)
+	}
+	pub fn bm_fg(mut self, foreground: Option<Color>) -> Self {
+		self.foreground = foreground;
+		self
+	}
+	pub fn bm_bg(mut self, background: Option<Color>) -> Self {
 		self.background = background;
 		self
 	}

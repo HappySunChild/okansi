@@ -1,6 +1,6 @@
 [package]
 name = "okansi"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT"
 description = "An ok library for creating ANSI terminal styles"
