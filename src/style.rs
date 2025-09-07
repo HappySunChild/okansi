@@ -139,19 +139,19 @@ impl AnsiStyle {
 	pub fn bm_strikethrough(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
-	/// Modifies the `AnsiStyle`'s dim flag, must be mutable
+	/// Borrows and modifies the `AnsiStyle`'s dim flag
 	pub fn bm_dim(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::DIM, enabled)
 	}
-	/// Modifies the `AnsiStyle`'s blinking flag, must be mutable
+	/// Borrows and modifies the `AnsiStyle`'s blinking flag
 	pub fn bm_blinking(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::BLINKING, enabled)
 	}
-	/// Modifies the `AnsiStyle`'s reverse flag, must be mutable
+	/// Borrows and modifies the `AnsiStyle`'s reverse flag
 	pub fn bm_reverse(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::REVERSE, enabled)
 	}
-	/// Modifies the `AnsiStyle`'s hidden flag, must be mutable
+	/// Borrows and modifies the `AnsiStyle`'s hidden flag
 	pub fn bm_hidden(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::HIDDEN, enabled)
 	}
@@ -208,28 +208,28 @@ impl AnsiStyle {
 			..Default::default()
 		}
 	}
-	/// Modifies the `AnsiStyle`'s dim flag, must be mutable
+	/// Returns a new `AnsiStyle` with the dim flag set to `true`
 	pub fn dim(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::DIM,
 			..Default::default()
 		}
 	}
-	/// Modifies the `AnsiStyle`'s blinking flag, must be mutable
+	/// Returns a new `AnsiStyle` with the blinking flag set to `true`
 	pub fn blinking(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::BLINKING,
 			..Default::default()
 		}
 	}
-	/// Modifies the `AnsiStyle`'s reverse flag, must be mutable
+	/// Returns a new `AnsiStyle` with the reverse flag set to `true`
 	pub fn reverse(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::REVERSE,
 			..Default::default()
 		}
 	}
-	/// Modifies the `AnsiStyle`'s hidden flag, must be mutable
+	/// Returns a new `AnsiStyle` with the hidden flag set to `true`
 	pub fn hidden(&self) -> Self {
 		Self {
 			flags: self.flags | bit_masks::HIDDEN,
