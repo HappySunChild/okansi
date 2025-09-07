@@ -7,3 +7,13 @@ description = "An ok library for creating ANSI terminal styles"
 repository = "https://github.com/HappySunChild/okansi"
 
 [dependencies]
+
+[target.'cfg(target_os="windows")'.dependencies.winapi]
+version = "*"
+features = [
+	"consoleapi",
+	"errhandlingapi",
+	"fileapi",
+	"handleapi",
+	"processenv",
+]
