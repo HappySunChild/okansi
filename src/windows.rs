@@ -27,6 +27,7 @@ unsafe fn get_out_handle() -> *mut winapi::ctypes::c_void {
 	}
 }
 
+/// Enables support for ANSI escape codes in Windows terminals (Powershell, Command Prompt)
 #[cfg(windows)]
 pub fn enable_ansi_support() -> Result<(), u32> {
 	unsafe {
