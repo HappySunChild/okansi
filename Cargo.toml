@@ -9,7 +9,7 @@ repository = "https://github.com/HappySunChild/okansi"
 [dependencies]
 
 [target.'cfg(target_os="windows")'.dependencies.winapi]
-version = "*"
+version = "0.3.9"
 features = [
 	"consoleapi",
 	"errhandlingapi",
