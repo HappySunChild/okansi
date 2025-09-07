@@ -295,6 +295,7 @@ mod tests {
 			..Default::default()
 		};
 		let mut text = String::from("Hello world!");
+		let expected = "\x1b[1mHello world!";
 
 		assert_eq!(
 			&text[..],
@@ -305,9 +306,9 @@ mod tests {
 
 		assert_eq!(
 			&text[..],
-			"\x1b[1mHello world!",
+			expected,
 			"Expected: {:3?}\nGot: {:3?}",
-			"\x1b[1mHello world!".as_bytes(),
+			expected.as_bytes(),
 			text.as_bytes()
 		);
 	}
@@ -326,7 +327,7 @@ mod tests {
 
 		assert_eq!(
 			output_text,
-			input_text //"Output text doesn't match input text"
+			input_text // "Output text doesn't match input text"
 		)
 	}
 }
