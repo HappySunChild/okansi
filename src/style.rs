@@ -3,6 +3,10 @@ mod bit_masks {
 	pub const ITALIC: u8 = 0b10;
 	pub const UNDERLINE: u8 = 0b100;
 	pub const STRIKETHROUGH: u8 = 0b1000;
+	pub const DIM: u8 = 0b10000;
+	pub const BLINKING: u8 = 0b100000;
+	pub const REVERSE: u8 = 0b1000000;
+	pub const HIDDEN: u8 = 0b10000000;
 }
 
 use std::fmt::{Display, Write};
@@ -40,6 +44,22 @@ impl AnsiStyle {
 	pub fn g_strikethrough(&self) -> bool {
 		self.flags & bit_masks::STRIKETHROUGH == bit_masks::STRIKETHROUGH
 	}
+	/// Returns whether the dim flag is set
+	pub fn g_dim(&self) -> bool {
+		self.flags & bit_masks::DIM == bit_masks::DIM
+	}
+	/// Returns whether the blinking flag is set
+	pub fn g_blinking(&self) -> bool {
+		self.flags & bit_masks::BLINKING == bit_masks::BLINKING
+	}
+	/// Returns whether the reverse flag is set
+	pub fn g_reverse(&self) -> bool {
+		self.flags & bit_masks::REVERSE == bit_masks::REVERSE
+	}
+	/// Returns whether the hidden flag is set
+	pub fn g_hidden(&self) -> bool {
+		self.flags & bit_masks::HIDDEN == bit_masks::HIDDEN
+	}
 
 	fn set_flags(&mut self, mask: u8, enabled: bool) -> &mut Self {
 		if enabled {
@@ -75,6 +95,23 @@ impl AnsiStyle {
 	pub fn m_strikethrough(&mut self, enabled: bool) -> &mut Self {
 		self.set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
+	/// Modifies the `AnsiStyle`'s dim flag, must be mutable
+	pub fn m_dim(&mut self, enabled: bool) -> &mut Self {
+		self.set_flags(bit_masks::DIM, enabled)
+	}
+	/// Modifies the `AnsiStyle`'s blinking flag, must be mutable
+	pub fn m_blinking(&mut self, enabled: bool) -> &mut Self {
+		self.set_flags(bit_masks::BLINKING, enabled)
+	}
+	/// Modifies the `AnsiStyle`'s reverse flag, must be mutable
+	pub fn m_reverse(&mut self, enabled: bool) -> &mut Self {
+		self.set_flags(bit_masks::REVERSE, enabled)
+	}
+	/// Modifies the `AnsiStyle`'s hidden flag, must be mutable
+	pub fn m_hidden(&mut self, enabled: bool) -> &mut Self {
+		self.set_flags(bit_masks::HIDDEN, enabled)
+	}
+
 	/// Modifies the `AnsiStyle`'s foreground color, must be mutable
 	pub fn m_fg(&mut self, foreground: Option<Color>) -> &mut Self {
 		self.foreground = foreground;
@@ -102,6 +139,23 @@ impl AnsiStyle {
 	pub fn bm_strikethrough(self, enabled: bool) -> Self {
 		self.b_set_flags(bit_masks::STRIKETHROUGH, enabled)
 	}
+	/// Modifies the `AnsiStyle`'s dim flag, must be mutable
+	pub fn bm_dim(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::DIM, enabled)
+	}
+	/// Modifies the `AnsiStyle`'s blinking flag, must be mutable
+	pub fn bm_blinking(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::BLINKING, enabled)
+	}
+	/// Modifies the `AnsiStyle`'s reverse flag, must be mutable
+	pub fn bm_reverse(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::REVERSE, enabled)
+	}
+	/// Modifies the `AnsiStyle`'s hidden flag, must be mutable
+	pub fn bm_hidden(self, enabled: bool) -> Self {
+		self.b_set_flags(bit_masks::HIDDEN, enabled)
+	}
+
 	/// Borrows and modifies the `AnsiStyle`'s foreground color
 	pub fn bm_fg(mut self, foreground: Option<Color>) -> Self {
 		self.foreground = foreground;
@@ -154,6 +208,35 @@ impl AnsiStyle {
 			..Default::default()
 		}
 	}
+	/// Modifies the `AnsiStyle`'s dim flag, must be mutable
+	pub fn dim(&self) -> Self {
+		Self {
+			flags: self.flags | bit_masks::DIM,
+			..Default::default()
+		}
+	}
+	/// Modifies the `AnsiStyle`'s blinking flag, must be mutable
+	pub fn blinking(&self) -> Self {
+		Self {
+			flags: self.flags | bit_masks::BLINKING,
+			..Default::default()
+		}
+	}
+	/// Modifies the `AnsiStyle`'s reverse flag, must be mutable
+	pub fn reverse(&self) -> Self {
+		Self {
+			flags: self.flags | bit_masks::REVERSE,
+			..Default::default()
+		}
+	}
+	/// Modifies the `AnsiStyle`'s hidden flag, must be mutable
+	pub fn hidden(&self) -> Self {
+		Self {
+			flags: self.flags | bit_masks::HIDDEN,
+			..Default::default()
+		}
+	}
+
 	/// Returns a new `AnsiStyle` with the foreground set the the specified `Color`
 	pub fn fg(&self, foreground: Color) -> Self {
 		Self {
@@ -211,6 +294,18 @@ impl Display for AnsiStyle {
 		}
 		if self.g_strikethrough() {
 			append("9")?
+		}
+		if self.g_dim() {
+			append("2")?
+		}
+		if self.g_blinking() {
+			append("5")?
+		}
+		if self.g_reverse() {
+			append("7")?
+		}
+		if self.g_hidden() {
+			append("8")?
 		}
 
 		if let Some(foreground) = &self.foreground {
